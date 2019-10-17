@@ -45,6 +45,7 @@ public class AStarNavigation extends INavigation {
 		
 		gCostMap.put(start, 0.0);
 		hCostMap.put(start, getDistance(start, target));
+		open.add(start);
 		
 		while(!(open.size()==0)) {
 			Coordinate current = getMinFTile(gCostMap, hCostMap, open);
@@ -52,6 +53,7 @@ public class AStarNavigation extends INavigation {
 				return null;
 			}
         	if (current.equals(target)) {
+    			System.out.print("d");
                 return buildPath(pathMap, current);  
             }
         	HashMap<Coordinate, String> neighbours = getNeighbours(exploredMap, current);

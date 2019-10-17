@@ -7,6 +7,7 @@ import tiles.TrapTile;
 import tiles.MapTile.Type;
 import utilities.Coordinate;
 import world.World;
+import world.WorldSpatial;
 import world.WorldSpatial.Direction;
 
 
@@ -16,7 +17,7 @@ import world.WorldSpatial.Direction;
  */
 public class CarMap {
 	private HashMap<Coordinate, MapTile> exploredMap;
-	private ArrayList<Coordinate> unexploredMap;
+	private ArrayList<Coordinate> unexploredMap = new ArrayList<>();
 	private MyAutoController controller;
 	
 	public CarMap(MyAutoController controller) {
@@ -107,6 +108,7 @@ public class CarMap {
 	public void removeUnexploredMap(Coordinate coor) {
 		unexploredMap.remove(coor);
 	}
+	
 	
 	
 

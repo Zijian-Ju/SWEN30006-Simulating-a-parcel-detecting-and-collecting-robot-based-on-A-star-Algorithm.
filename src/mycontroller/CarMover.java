@@ -23,9 +23,9 @@ public class CarMover {
 	private Coordinate position = null; 
 
 	
-	public CarMover(AStarNavigation navigation, MyAutoController carController) {
+	public CarMover(INavigation navigation, MyAutoController carController) {
 		currentState = state.EXPLORE;
-		this.navigation= navigation;
+		this.navigation= (AStarNavigation) navigation;
 		strategy = new NearestFirstStrategy ();
 		this.controller = carController;
 	}
@@ -145,9 +145,11 @@ public class CarMover {
 	 * @param path
 	 */
 	protected void follow(ArrayList<Coordinate> path) {	
+
 		int next = 1;
 		if(last!=null && !controller.getCurrentCoordinate().equals(last)) {
 			move(controller, last);
+
 		}else if (path!=null && path.size()>1) {	
 			last = path.get(next);
 			move(controller, last);

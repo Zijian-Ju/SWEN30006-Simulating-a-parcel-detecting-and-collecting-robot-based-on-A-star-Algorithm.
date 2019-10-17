@@ -16,7 +16,7 @@ public class MyAutoController extends CarController{
 	//sensor of the controller
 	private CarMap carMap;
 	//path finder find the path
-	private AStarNavigation navigation;
+	private INavigation navigation;
 	//path follower follows the path
 	private CarMover carMover;
 	
@@ -38,9 +38,8 @@ public class MyAutoController extends CarController{
 			initiate = false;
 		}
 		
-		//update the sensor
-		HashMap<Coordinate, MapTile> currentview = getView();
-		carMap.update(currentview);
+		//update currentView to car map
+		carMap.update(getView());
 		
 		//update the path follower
 		carMover.update();
@@ -49,7 +48,7 @@ public class MyAutoController extends CarController{
 
 	
 	/**
-	 * get the current location of the car
+	 * Get the current location of the car
 	 * @return current coordinate
 	 */
 	public Coordinate getCurrentCoordinate() {
@@ -59,16 +58,10 @@ public class MyAutoController extends CarController{
 	
 
 	/**
-	 * get the sensor
-	 * @return sensor
+	 * get the carMap
+	 * @return carMap
 	 */
 	public CarMap getCarMap() {
 		return carMap;
 	}
-	
-
-
-	
-	
-
 }
