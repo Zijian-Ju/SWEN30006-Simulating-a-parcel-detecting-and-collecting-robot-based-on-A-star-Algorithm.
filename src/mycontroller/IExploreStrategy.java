@@ -4,6 +4,10 @@ import java.util.ArrayList;
 
 import utilities.Coordinate;
 
+/**
+ * The interface for the explore strategy
+ * @author Zijian Ju; Yuting Cai; Xu Han
+ */
 public interface IExploreStrategy {
 	
 	/**

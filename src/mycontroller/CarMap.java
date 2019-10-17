@@ -13,39 +13,51 @@ import world.WorldSpatial.Direction;
 
 /**
  * CarMap stores the map (each tile type) that is detected by the GPS
- *
+ *@author Zijian Ju; Yuting Cai; Xu Han
  */
 public class CarMap {
 	private HashMap<Coordinate, MapTile> exploredMap;
 	private ArrayList<Coordinate> unexploredMap = new ArrayList<>();
 	private MyAutoController controller;
 	
+	/**
+	 * Constructor
+	 * @param controller
+	 */
 	public CarMap(MyAutoController controller) {
 		this.controller = controller;
-		initializeExploredView();
-		initalizeUnexploredView();
+		initalizeUnexploredMap();
+		initializeExploredMap();
 	}
 	
+	/**
+	 * Get explored map
+	 * @return the map that car has detected
+	 */
 	public HashMap<Coordinate, MapTile> getExploredMap(){
 		return exploredMap;
 	}
 	
+	/**
+	 * Get unexplored map
+	 * @return the map that car has not detected
+	 */
 	public ArrayList<Coordinate> getUnexploredMap(){
 		return unexploredMap;
 	}
 	
 	/**
-	 * initialize the explored view with provided map tiles
+	 * Initialize the explored view with provided map tiles
 	 */
-	private void initializeExploredView() {
+	private void initializeExploredMap() {
 		exploredMap = new HashMap<Coordinate, MapTile>();
 		exploredMap.putAll(controller.getMap());
 	}
 	
 	/**
-	 * initialize the unexplored view contains all coordinates of the map
+	 * Initialize the unexplored map base on the world map
 	 */
-	private void initalizeUnexploredView() {
+	private void initalizeUnexploredMap() {
 		for(int xPosition = 0 ; xPosition < World.MAP_WIDTH; xPosition++) {
 			for(int yPosition = 0 ; yPosition < World.MAP_HEIGHT ; yPosition++) {
 				unexploredMap.add(new Coordinate(xPosition, yPosition));
@@ -71,7 +83,7 @@ public class CarMap {
 	
 	/**
 	 * Get the exit tile from the explored view
-	 * @return the exit
+	 * @return the coordinates of the exit
 	 */
 	public ArrayList<Coordinate> getExitLocation(){
 		ArrayList<Coordinate> exit = new ArrayList<Coordinate>();
@@ -84,7 +96,7 @@ public class CarMap {
 	}
 	
 	/**
-	 * gets a list of trap locations based on trap type
+	 * Get a list of trap coordinates based on trap type
 	 * @param trapType
 	 * @return a list of traps' coordinates
 	 */
@@ -102,14 +114,10 @@ public class CarMap {
 	}
 	
 	/**
-	 * removes coordinate from the unexplored view
+	 * Removes coordinate from the unexplored map
 	 * @param coordinate
 	 */
-	public void removeUnexploredMap(Coordinate coor) {
+	public void removeUnexploredCoor(Coordinate coor) {
 		unexploredMap.remove(coor);
 	}
-	
-	
-	
-
 }

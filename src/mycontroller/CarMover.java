@@ -9,14 +9,13 @@ import utilities.Coordinate;
 import world.WorldSpatial;
 
 public class CarMover {
-	protected MyAutoController controller;
+	private MyAutoController controller;
 	private IExploreStrategy strategy;
 	//two states: explore and goto
-	public enum state{EXPLORE, GOTO};
-	//two type of tiles the car wants to go directly
-	public enum goal{EXIT, PARCEL};
-	protected state currentState;
-	protected goal currentGoal = null;
+	
+	private enum CAR_STATE{EXPLORE, PARCEL, EXIT};
+	private CAR_STATE currentState;
+	
 	protected ArrayList<Coordinate> currentPath = null;
 	private Coordinate last = null;
 	protected AStarNavigation navigation;
@@ -24,49 +23,51 @@ public class CarMover {
 
 	
 	public CarMover(INavigation navigation, MyAutoController carController) {
-		currentState = state.EXPLORE;
+		currentState = CAR_STATE.EXPLORE;
 		this.navigation= (AStarNavigation) navigation;
-		strategy = new NearestFirstStrategy ();
+		strategy = ExploreStrategyFactory.getInstance().getExploreStrategy();
 		this.controller = carController;
 	}
 	
 	/**
-	 * updates the path follower
+	 * Update the carMover
 	 * @param myController
 	 */
 	public void update() {
+		ArrayList<Coordinate> parcels = controller.getCarMap().getTrapLocations("parcel");
+		ArrayList<Coordinate> exits = controller.getCarMap().getExitLocation();
 		switch(currentState) {
-		//explores the map 
 		case EXPLORE:
-			//boolean: whether to change the state
-			boolean state = false;	
 			//go to exit if enough parcels are found
 			if(controller.numParcels() == controller.numParcelsFound()) {
-				state = isExit();
-			}
-			//go to parcel if a parcel is found
-			else if(!controller.getCarMap().getTrapLocations("parcel").isEmpty()){
-				state = isParcel();
-			}
-			if(!state) {
+				if (getBestPath(exits) != null) {
+				     currentState = CAR_STATE.EXIT;
+				     currentPath = getBestPath(exits);
+				}
+				//Change state to collect parcel if possible
+			}else if(getBestPath(parcels) != null){
+					currentState = CAR_STATE.PARCEL;
+				    currentPath = getBestPath(parcels);
+			}else {
 				currentPath = explore();
 			}
 			break;
-		//after a GOTO state, change the state if necessary.
-		case GOTO:
-			changeArrivedState();
+		case PARCEL:
+			if(getBestPath(parcels) == null) {
+				currentState = CAR_STATE.EXPLORE;
+				currentPath = explore();
+			}
 			break;
 		default:
 			break;
 		}
-		//moves the car according to a path
-		follow(currentPath);
+		//moves the car following path
+		followPath(currentPath);
 	}
 	
-
 	/**
-	 * explores the map
-	 * @return
+	 * Explore the map
+	 * @return the path determined by AStarNavigation
 	 */
 	public ArrayList<Coordinate> explore(){
 		Coordinate current = controller.getCurrentCoordinate();
@@ -81,12 +82,12 @@ public class CarMover {
 		if (controller.getCarMap().getExploredMap().get(position).isType(Type.WALL)==false) {
 			path =navigation.getPath(controller.getCarMap().getExploredMap(), current, position);
 			if (path==null || path.isEmpty()) { 
-				controller.getCarMap().removeUnexploredMap(position);
+				controller.getCarMap().removeUnexploredCoor(position);
 				path = explore();
 			}
 		}
 		else {
-			controller.getCarMap().removeUnexploredMap(position);
+			controller.getCarMap().removeUnexploredCoor(position);
 			path = explore();
 		}
 		return path; 
@@ -94,71 +95,22 @@ public class CarMover {
 	
 	
 	/**
-	 * whether to get the parcel
-	 * @return boolean
-	 */
-	protected boolean isParcel() {
-		ArrayList<Coordinate> parcels = controller.getCarMap().getTrapLocations("parcel");
-		ArrayList<Coordinate> path = getBestPath(parcels);
-		if(path != null) {
-			currentState = state.GOTO;
-			currentGoal = goal.PARCEL;
-			currentPath = path;
-			return true;
-		}
-		
-		return false;
-	}
-	
-	/**
-	 * whether to get the exit
-	 * @return boolean
-	 */
-	protected boolean isExit() {
-		ArrayList<Coordinate> exits = controller.getCarMap().getExitLocation();
-		ArrayList<Coordinate> path = getBestPath(exits);
-		if(path != null) {
-			currentState = state.GOTO;
-			currentGoal = goal.EXIT;
-			currentPath = path;
-			return true;
-		}
-		return false;
-	}
-		
-
-	/**
-	 * change the state back to explore
-	 */
-	protected void changeArrivedState() {
-		if(currentPath.size() == 2) {
-			if (currentGoal == goal.PARCEL) {
-				currentState = state.EXPLORE;
-				currentGoal = null;
-			}
-		}
-	}
-	
-
-	/**
-	 * moves the car according to a path
+	 * Move the car following path
 	 * @param path
 	 */
-	protected void follow(ArrayList<Coordinate> path) {	
-
-		int next = 1;
+	protected void followPath(ArrayList<Coordinate> path) {	
 		if(last!=null && !controller.getCurrentCoordinate().equals(last)) {
 			move(controller, last);
-
-		}else if (path!=null && path.size()>1) {	
-			last = path.get(next);
+		}else if (path.size()>1) {
+			//The first element in array in current location, the second one is the target position.
+			last = path.get(1);
 			move(controller, last);
-			path.remove(next);
+			path.remove(1);
 		}
 	}
 	
 	/**
-	 * moves the car from 1 tile to another tile (one step move)
+	 * Move the car from 1 tile to one of its neighbor (one step move)
 	 * @param controller
 	 * @param target
 	 */
@@ -209,9 +161,9 @@ public class CarMover {
 	}	
 	
 	/**
-	 * gets the best path based on a list of target coordinates
+	 * Get the best path based on a list of target coordinates
 	 * @param targets
-	 * @return
+	 * @return The best path presented by a list of coordinates
 	 */
 	private ArrayList<Coordinate> getBestPath(ArrayList<Coordinate> targets){
 		double min = Double.MAX_VALUE;
@@ -225,7 +177,8 @@ public class CarMover {
 			if(currentPath != null)
 				paths.add(currentPath);
 		}
-		// select the least health consuming path
+
+        // Select the path consuming the least fuel, if the the paths contains a wall, the fuel cost will be the Double.MAX_VALUE, which will not be returned
 		if(!paths.isEmpty())
 			for(ArrayList<Coordinate> path: paths) {
 				double fuelCost = path.size();
