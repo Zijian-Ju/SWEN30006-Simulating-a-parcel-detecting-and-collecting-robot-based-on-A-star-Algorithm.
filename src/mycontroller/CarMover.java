@@ -8,19 +8,22 @@ import tiles.MapTile.Type;
 import utilities.Coordinate;
 import world.WorldSpatial;
 
+/**
+ * CarMover class to control the car's movement
+ * @author Zijian Ju;Yuting Cai; Xu Han
+ *
+ */
 public class CarMover {
 	private MyAutoController controller;
 	private IExploreStrategy strategy;
-	//two states: explore and goto
 	
 	private enum CAR_STATE{EXPLORE, PARCEL, EXIT};
 	private CAR_STATE currentState;
 	
 	protected ArrayList<Coordinate> currentPath = null;
-	private Coordinate last = null;
-	protected AStarNavigation navigation;
+	private Coordinate nextCoor = null;
+	private AStarNavigation navigation;
 	private Coordinate position = null; 
-
 	
 	public CarMover(INavigation navigation, MyAutoController carController) {
 		currentState = CAR_STATE.EXPLORE;
@@ -79,14 +82,8 @@ public class CarMover {
 		if(position == null) {
 			return null;
 		}	
-		if (controller.getCarMap().getExploredMap().get(position).isType(Type.WALL)==false) {
-			path =navigation.getPath(controller.getCarMap().getExploredMap(), current, position);
-			if (path==null || path.isEmpty()) { 
-				controller.getCarMap().removeUnexploredCoor(position);
-				path = explore();
-			}
-		}
-		else {
+		path =navigation.getPath(controller.getCarMap().getExploredMap(), current, position);
+	    if (path==null || path.isEmpty()) { 
 			controller.getCarMap().removeUnexploredCoor(position);
 			path = explore();
 		}
@@ -98,13 +95,13 @@ public class CarMover {
 	 * Move the car following path
 	 * @param path
 	 */
-	protected void followPath(ArrayList<Coordinate> path) {	
-		if(last!=null && !controller.getCurrentCoordinate().equals(last)) {
-			move(controller, last);
+	private void followPath(ArrayList<Coordinate> path) {	
+		if(nextCoor!=null && !controller.getCurrentCoordinate().equals(nextCoor)) {
+			move(controller, nextCoor);
 		}else if (path.size()>1) {
 			//The first element in array in current location, the second one is the target position.
-			last = path.get(1);
-			move(controller, last);
+			nextCoor = path.get(1);
+			move(controller, nextCoor);
 			path.remove(1);
 		}
 	}
