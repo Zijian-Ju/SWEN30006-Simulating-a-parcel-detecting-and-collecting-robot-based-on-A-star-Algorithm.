@@ -79,17 +79,13 @@ public class CarMover {
 		if(position == null) {
 			return null;
 		}	
-		if (controller.getCarMap().getExploredMap().get(position).isType(Type.WALL)==false) {
-			path =navigation.getPath(controller.getCarMap().getExploredMap(), current, position);
-			if (path==null || path.isEmpty()) { 
-				controller.getCarMap().removeUnexploredCoor(position);
-				path = explore();
-			}
-		}
-		else {
+		//non explore position not null 
+		path =navigation.getPath(controller.getCarMap().getExploredMap(), current, position);
+		if (path==null || path.isEmpty()) { 
 			controller.getCarMap().removeUnexploredCoor(position);
 			path = explore();
 		}
+		
 		return path; 
 	}
 	
