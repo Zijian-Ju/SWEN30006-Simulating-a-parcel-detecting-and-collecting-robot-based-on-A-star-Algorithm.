@@ -12,7 +12,7 @@ import utilities.Coordinate;
 
 /**
  * A concrete Navigation applying AStar Algorighm.
- * @author Zijian Ju, Yuting Cai, Xu Han
+ * @author Zijian Ju, Yuting Cai, Jacob Han
  */
 public class AStarNavigation extends INavigation {
 	private static final double WALL = Double.MAX_VALUE;

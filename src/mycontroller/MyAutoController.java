@@ -13,7 +13,7 @@ import world.WorldSpatial;
 
 /**
  * The controller of the car including a car map to store the views detected by the car, a carMover to move the car
- * @author Zijian Ju; Yuting Cai ; Xu Han
+ * @author Zijian Ju; Yuting Cai ; Jacob Han
  *
  */
 public class MyAutoController extends CarController{

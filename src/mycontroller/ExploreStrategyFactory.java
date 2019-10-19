@@ -2,7 +2,7 @@ package mycontroller;
 
 /**
  * Singleton Strategy Factory in order to produce strategy
- * @author Zijian Ju; Xu Han; Yuting Cai
+ * @author Zijian Ju; Jacob Han; Yuting Cai
  */
 public class ExploreStrategyFactory {
 	public static ExploreStrategyFactory instance = null;

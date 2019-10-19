@@ -6,7 +6,7 @@ import utilities.Coordinate;
 
 /**
  * The concrete class of explore strategy based on nearest first principle;
- * @author Zijian Ju; Yuting Cai; Xu Han
+ * @author Zijian Ju; Yuting Cai; Jacob Han
  *
  */
 public class NearestFirstStrategy implements IExploreStrategy{

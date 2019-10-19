@@ -6,7 +6,7 @@ import utilities.Coordinate;
 
 /**
  * The interface for the explore strategy
- * @author Zijian Ju; Yuting Cai; Xu Han
+ * @author Zijian Ju; Yuting Cai; Jacob Han
  */
 public interface IExploreStrategy {
 	

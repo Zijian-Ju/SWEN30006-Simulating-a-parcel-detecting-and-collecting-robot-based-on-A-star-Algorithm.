@@ -10,7 +10,7 @@ import world.WorldSpatial;
 
 /**
  * CarMover class to control the car's movement
- * @author Zijian Ju;Yuting Cai; Xu Han
+ * @author Zijian Ju;Yuting Cai; Jacob Han
  *
  */
 public class CarMover {

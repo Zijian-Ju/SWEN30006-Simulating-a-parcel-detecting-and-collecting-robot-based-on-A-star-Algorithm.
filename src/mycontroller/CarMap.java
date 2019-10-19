@@ -13,7 +13,7 @@ import world.WorldSpatial.Direction;
 
 /**
  * CarMap stores the map (each tile type) that is detected by the GPS
- *@author Zijian Ju; Yuting Cai; Xu Han
+ *@author Zijian Ju; Yuting Cai; Jacob Han
  */
 public class CarMap {
 	private HashMap<Coordinate, MapTile> exploredMap;
