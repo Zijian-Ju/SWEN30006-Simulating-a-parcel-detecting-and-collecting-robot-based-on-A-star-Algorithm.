@@ -44,21 +44,18 @@ public class CarMover {
 			//go to exit if enough parcels are found
 			if(controller.numParcels() == controller.numParcelsFound()) {
 				if (getBestPath(exits) != null) {
-				     currentState = CAR_STATE.EXIT;
-				     currentPath = getBestPath(exits);
+					changeState("exit", exits);
 				}
 				//Change state to collect parcel if possible
 			}else if(getBestPath(parcels) != null){
-					currentState = CAR_STATE.PARCEL;
-				    currentPath = getBestPath(parcels);
+				changeState("parcel", parcels);
 			}else {
 				currentPath = explore();
 			}
 			break;
 		case PARCEL:
 			if(getBestPath(parcels) == null) {
-				currentState = CAR_STATE.EXPLORE;
-				currentPath = explore();
+				changeState("explore", null);
 			}
 			break;
 		default:
@@ -66,6 +63,25 @@ public class CarMover {
 		}
 		//moves the car following path
 		followPath(currentPath);
+	}
+	
+	/**
+	 * change state and decide the current path
+	 * @param state change state name
+	 * @param coordinate coordinate of the state
+	 */
+	private void changeState(String state, ArrayList<Coordinate> coordinate) {
+		if (state.equals("exit")) {
+			currentState = CAR_STATE.EXIT;
+			currentPath = getBestPath(coordinate);
+		} else if (state.equals("parcel")) {
+			currentState = CAR_STATE.PARCEL;
+			currentPath = getBestPath(coordinate);
+		} else {
+			currentState = CAR_STATE.EXPLORE;
+		    currentPath = explore();
+		}   
+		   
 	}
 	
 	/**
